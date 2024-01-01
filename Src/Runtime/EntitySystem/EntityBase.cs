@@ -16,6 +16,17 @@ namespace LD
         {
             
         }
+
+        protected virtual void Start()
+        {
+            
+        }
+
+        protected virtual void Update()
+        {
+            
+        }
+        
     }
     
 }

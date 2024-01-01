@@ -1,6 +1,6 @@
 ﻿namespace LD
 {
-    public class InteractiveEntity
+    public class CCPEntity : LiveEntity
     {
         
     }

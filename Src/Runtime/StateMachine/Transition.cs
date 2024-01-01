@@ -2,29 +2,37 @@
 
 namespace LD.StateMachine
 {
-    public abstract class Transition<TStateKey, TState>
+    public class Transition<TStateKey>
         where TStateKey : struct, Enum
-        where TState : State<TStateKey>
     {
+        public Func<bool> transitionLambda = null;
         private StateMachine<TStateKey> RootStateMachine { get; }
 
-        public Transition(StateMachine<TStateKey> rootStateMachine)
+        public TStateKey Src { get; set; }
+        public TStateKey Dest { get; set; }
+
+        public Transition(TStateKey src, TStateKey dest, Func<bool> lambda = null)
         {
-            RootStateMachine = rootStateMachine;
-        } 
-        
-        public void CheckTransition()
-        {
-            if (CanTransition())
-            {
-                // do transition
-            }
-            else
-            {
-                
-            }
+            this.Src = src;
+            this.Dest = dest; 
+            this.transitionLambda = lambda;
         }
 
-        protected abstract bool CanTransition();
+        protected bool CheckTransition()
+        {
+            if (transitionLambda != null) 
+                return transitionLambda();
+            return true;
+        }
+
+        public bool CanTransition()
+        {     
+            if (transitionLambda != null) 
+                return transitionLambda();
+            else
+            { 
+                return CheckTransition();
+            } 
+        }
     }
 }

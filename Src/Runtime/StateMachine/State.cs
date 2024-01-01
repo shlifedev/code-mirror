@@ -2,7 +2,7 @@
 
 namespace LD.StateMachine
 {
-    public class State<TStateKey> where TStateKey : struct, Enum
+    public abstract class State<TStateKey> where TStateKey : struct, Enum
     {
         public State(TStateKey key)
         {
@@ -25,19 +25,12 @@ namespace LD.StateMachine
         {
             OnStateExit();
         }
-        
-        protected virtual void OnStateEnter()
-        {
-        }
 
-        protected virtual void OnStateUpdate()
-        {
-        }
+        protected abstract void OnStateEnter();
+        protected abstract void OnStateUpdate();
+        protected abstract void OnStateExit();
 
-        protected virtual void OnStateExit()
-        {
-        }
-        
-        
+
+        public override string ToString() => "State "+this.Key.ToString();
     }
 }

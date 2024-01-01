@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using UnityEngine; 
+using UnityEngine;
 
 namespace LD
 {
@@ -13,7 +13,7 @@ namespace LD
         private GameObject _instantiated = null;
 
         private bool _isExecuted = false;
-        
+
         private BasePlacer _cachedPlacer;
 
         public PlaceCommand(GameObject prefab, Vector3 point, Quaternion rotation, Vector3 scale)
@@ -23,36 +23,31 @@ namespace LD
             Rotation = rotation;
             Scale = scale;
         }
+
         public void Execute()
         {
-            var op = GameObject.InstantiateAsync<GameObject>(Prefab);
-            op.completed += (createdOp) =>
-            {
-               _instantiated = op.Result.First();
-               _instantiated.transform.position = this.Point;
-               _instantiated.transform.rotation = this.Rotation;
-               _instantiated.transform.localScale = this.Scale; 
-               _isExecuted = true;  
-            };  
-            
+            var op = GameObject.Instantiate(Prefab);
+            _instantiated = op;
+            _instantiated.transform.position = this.Point;
+            _instantiated.transform.rotation = this.Rotation;
+            _instantiated.transform.localScale = this.Scale;
+            _isExecuted = true;
         }
 
         public void Undo()
         {
-            GameObject.DestroyImmediate(_instantiated); 
+            GameObject.DestroyImmediate(_instantiated);
         }
 
         public void Redo()
         {
-            var op = GameObject.InstantiateAsync<GameObject>(Prefab);
-            op.completed += (createdOp) =>
-            {
-                _instantiated = op.Result.First();
-                _instantiated.transform.position = this.Point;
-                _instantiated.transform.rotation = this.Rotation;
-                _instantiated.transform.localScale = this.Scale; 
-                _isExecuted = true;  
-            };  
+            var op = GameObject.Instantiate(Prefab);
+
+            _instantiated = op;
+            _instantiated.transform.position = this.Point;
+            _instantiated.transform.rotation = this.Rotation;
+            _instantiated.transform.localScale = this.Scale;
+            _isExecuted = true;
         }
     }
 }

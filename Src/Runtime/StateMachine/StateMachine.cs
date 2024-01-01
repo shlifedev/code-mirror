@@ -4,11 +4,12 @@ using System.Collections.Generic;
 namespace LD.StateMachine
 {
  
-    public sealed class StateMachine<TStateKey> : ITickable where TStateKey : struct, Enum 
+    public sealed class StateMachine<TStateKey> : ITickable where TStateKey : struct, Enum
     { 
         private State<TStateKey> CurrentState { get; set; }
         private List<State<TStateKey>> States { get; }
         private Dictionary<TStateKey, State<TStateKey>> StatesMap;
+        public List<Transition<TStateKey>> Transitions = new List<Transition<TStateKey>>();
         public StateMachine(List<State<TStateKey>> list, TStateKey initialState)
         {
             StatesMap = new Dictionary<TStateKey, State<TStateKey>>();
@@ -19,6 +20,25 @@ namespace LD.StateMachine
             CurrentState.Enter(); 
         }
 
+        public void AddTransition(Transition<TStateKey> transition)
+        {
+            this.Transitions.Add(transition);
+        }
+
+        private void CheckTransition()
+        { 
+            foreach (var transition in this.Transitions)
+            {
+                if (transition.Src.Equals(CurrentState.Key))
+                {
+                    if (transition.CanTransition())
+                    {
+                        ChangeState(transition.Dest);
+                        break;
+                    }
+                } 
+            }
+        }
         public void ChangeState(TStateKey key)
         {
             if (CurrentState != null)
@@ -26,6 +46,7 @@ namespace LD.StateMachine
                 CurrentState.Exit();
                 if (StatesMap.TryGetValue(key, out var state))
                 {
+                    CurrentState = state;
                     state.Enter();
                 }
                 else
@@ -43,6 +64,7 @@ namespace LD.StateMachine
         {
             if (CurrentState != null)
             {
+                CheckTransition();
                 CurrentState.Update();
             }
             else
